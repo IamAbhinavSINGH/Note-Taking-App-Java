@@ -33,7 +33,7 @@ public class AddEditNoteFragment extends Fragment {
     private FragmentAddEditNoteBinding binding;
     private AddEditViewModel viewModel;
     private ColorRVAdapter adapter ;
-
+    private int currentNoteId = -1;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +69,7 @@ public class AddEditNoteFragment extends Fragment {
 
         }
         else {
+            currentNoteId = noteId;
             viewModel.getNoteById(noteId);
         }
 
@@ -101,7 +102,6 @@ public class AddEditNoteFragment extends Fragment {
             }
         });
     }
-
     private void navigateToNotesListFragment(){
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
         navController.navigate(R.id.action_addEditNote_to_notesFragment);
@@ -144,8 +144,15 @@ public class AddEditNoteFragment extends Fragment {
         String colorName = viewModel.colorName.getValue();
         long timeStamp = System.currentTimeMillis();
 
-        return new Note(
-                title, content, emailId, timeStamp, colorName
-        );
+        if(currentNoteId != -1){
+            return new Note(
+                    currentNoteId, title, content, emailId, timeStamp, colorName
+            );
+        }
+        else {
+            return new Note(
+                    title, content, emailId, timeStamp, colorName
+            );
+        }
     }
 }

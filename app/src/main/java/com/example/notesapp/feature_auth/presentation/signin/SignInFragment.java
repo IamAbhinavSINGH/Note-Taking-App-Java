@@ -48,7 +48,8 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class SignInFragment extends Fragment {
     private GoogleSignInClient googleSignInClient;
     private FragmentSignInBinding binding ;
-    private final ActivityResultContracts.StartActivityForResult signInResultContract = new ActivityResultContracts.StartActivityForResult();
+    private final ActivityResultContracts.StartActivityForResult signInResultContract =
+            new ActivityResultContracts.StartActivityForResult();
     private ActivityResultLauncher<Intent> signInLauncher;
 
 
@@ -124,6 +125,25 @@ public class SignInFragment extends Fragment {
                 });
     }
     private void initializeGoogleSignInClient(Context context){
+
+        boolean[] isCompleted = {false};
+
+        GoogleSignIn.getClient(context, GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .revokeAccess()
+                .addOnCompleteListener(
+                        task -> {
+                            GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                    .requestIdToken(getString(R.string.web_client_id))
+                                    .requestEmail()
+                                    .build();
+                            googleSignInClient = GoogleSignIn.getClient(context, options);
+
+                            isCompleted[0] = true;
+                        }
+                );
+
+        if(isCompleted[0]) return;
+
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.web_client_id))
                 .requestEmail()
